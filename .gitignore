@@ -1,0 +1,6 @@
+.venv
+.idea
+.env
+.gitignore
+src/auth/certs/public.pem
+src/auth/certs/private.pem

@@ -1,1 +1,11 @@
-Generic single-database configuration.
+Миграции базы данных KAIFU
+
+Я использую Alembic для версионирования схемы PostgreSQL.
+Команды выполняются из корня репозитория с активированным Python-окружением
+и настроенным .env:
+
+    alembic upgrade head
+    alembic current
+
+Порядок подготовки базы описан в docs/SETUP.md.
+Расхождения исторической миграции с моделями перечислены в docs/STATUS.md.

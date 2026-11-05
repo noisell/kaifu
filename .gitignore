@@ -1,6 +1,37 @@
-.venv
-.idea
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local configuration and secrets
 .env
-.gitignore
-src/auth/certs/public.pem
-src/auth/certs/private.pem
+.env.*
+!.env.example
+src/auth/certs/*.pem
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+
+# Generated artifacts
+*.log
+build/
+dist/
+*.egg-info/
+
+# Frontend
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+.env-*
+celerybeat-schedule*

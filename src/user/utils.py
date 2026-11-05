@@ -6,8 +6,6 @@ from src.user.config import CHANNEL_ID, CHECK_SUB_URL
 async def check_sub_telegram(user_id: int):
     params = {"chat_id": CHANNEL_ID, "user_id": user_id}
     context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
 
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=context)) as session:
         try:

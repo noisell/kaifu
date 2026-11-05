@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# BOT_TOKEN = os.getenv('BOT_TOKEN')
-BOT_TOKEN = "REMOVED_SECRET"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 SITE_URL = os.getenv('SITE_URL')
 ADMIN_URL = os.getenv('ADMIN_URL')
 

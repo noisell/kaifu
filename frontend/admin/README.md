@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# KAIFU · Admin Panel
 
-## Getting Started
+Я разработал самостоятельную веб-панель оператора [KAIFU](../../README.md), работающая в браузере отдельно от Telegram Mini App.
 
-First, run the development server:
+**Стек:** Next.js 14.1.4, React 18, TypeScript, Ant Design, Recharts, Axios, TON Connect.
+
+## Разделы
+
+| Маршрут | Назначение |
+| --- | --- |
+| `/` | Вход администратора, затем статистика и графики |
+| `/users` | Поиск пользователей, сортировка, редактирование балансов и блокировки |
+| `/transactions` | История операций и интерфейс обработки TON-выплаты |
+| `/bank` | Параметры банка |
+| `/tickets` | Таблица билетов |
+| `/wins` | Таблица выигрышей и их статусов |
+| `/jackpot` | Ежедневные результаты и управление jackpot через API |
+| `/settings` | Параметры экономики |
+
+## Запуск
+
+Из этой директории, с установленным Node.js и npm:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm ci
+# Скопируйте .env.example в .env.local, сохранив существующие настройки.
+# Укажите NEXT_PUBLIC_API_URL совместимого backend.
+npm run dev -- --port 3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Production-сборка: `npm run build`, запуск: `npm run start -- --port 3001`. Другой порт позволяет работать одновременно с Mini App. Зависимости устанавливаются по `package-lock.json`; я выполнял проверку на Node.js 24.22.1. Версия Node.js в историческом коде не закреплена.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`NEXT_PUBLIC_API_URL` является публичным адресом и встраивается при сборке. Не добавляйте в frontend пароли администратора, приватные ключи или токены серверных сервисов.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Контракт с backend
 
-## Learn More
+Панель ожидает административную авторизацию (`/auth/admin/login`) и группы `/admin/stats`, `/admin/user`, `/admin/money`, `/admin/bank`, `/admin/lottery`, `/admin/system`. Восстановленный Python backend содержит эти маршруты и проверку уровня администратора. Я проверил чтение административных данных и изменение баланса с локальным admin JWT. Браузерный вход, refresh-cookie и реальные выплаты отдельно не проверялись.
 
-To learn more about Next.js, take a look at the following resources:
+TON Connect manifest привязан к историческому адресу в `src/app/layout.tsx`. Для своего запуска нужна настройка собственного manifest и тестового окружения. Серверная авторизация и проверка прав должны обеспечиваться API; клиентская навигация не является механизмом защиты.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[Общий запуск](../../docs/SETUP.md) · [Состояние публичного среза](../../docs/STATUS.md)

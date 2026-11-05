@@ -1,0 +1,41 @@
+{
+  "name": "murr",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@ant-design/nextjs-registry": "^1.0.2",
+    "antd-style": "^3.7.1",
+    "axios": "^1.7.7",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "luxon": "^3.5.0",
+    "next": "14.1.4",
+    "react": "^18",
+    "react-animate-numbers": "^1.0.6",
+    "react-animated-numbers": "^0.18.0",
+    "react-dom": "^18",
+    "react-highlight-words": "^0.20.0",
+    "recharts": "^2.13.3",
+    "@tonconnect/ui-react": "^2.0.9",
+    "tonweb": "^0.0.66",
+    "tonweb-mnemonic": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-highlight-words": "^0.20.0",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5"
+  }
+}

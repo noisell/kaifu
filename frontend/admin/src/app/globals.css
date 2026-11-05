@@ -1,0 +1,87 @@
+@import url('font/stylesheet.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+button, a {
+  cursor: pointer;
+}
+
+body {
+  display: flex;
+  width: 100vw;
+  background-color: #FFF;
+  color: black;
+  overflow: hidden;
+  height: 100vh;
+  font-family: 'Mont', sans-serif;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 256px);
+  height: 100%;
+
+}
+.section {
+  display: flex;
+  min-width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  align-items: start;
+  margin-top: 2rem;
+  padding: 0 2rem 0 2rem;
+}
+
+.blur-container {
+  position: absolute;
+  width: 100vw;
+  height: 40px;
+  z-index: 1;
+  border-radius: 9999px;
+  filter: blur(60px);
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+}
+.blur-container-top {
+  top: 30%;
+  width: 150px;
+  height: 150px;
+  filter: blur(100px);
+  background-color: #b1b1b1;
+}
+
+.blur-container-bottom {
+  bottom: 0;
+  width: 40vw;
+  height: 100px;
+  filter: blur(120px);
+  background-color: #eda74e;
+}
+
+.blur-container-top-ticket {
+  top: 0;
+  width: 40vw;
+  height: 100px;
+  filter: blur(120px);
+  background-color: #eda74e;
+}
+
+.blur-container-ref {
+  top: 100px;
+  width: 40vw;
+  height: 100px;
+  filter: blur(120px);
+  background-color: #3786f6;
+}

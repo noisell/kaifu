@@ -6,6 +6,8 @@ from sqlalchemy import insert, select, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.database import Base
+
 
 class AbstractRepository(ABC):
     @abstractmethod
@@ -17,7 +19,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_by_id(self, item_id: int):
+    async def get_by_id(self, item_id: int, for_user_id: bool = False):
         raise NotImplementedError
 
     @abstractmethod
@@ -29,9 +31,9 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
 
-class SQLAlchemyRepository(AbstractRepository, ABC):
-    model = None
-    schema: Type[BaseModel] | None = None
+class SQLAlchemyRepository[Model: Type[Base], Schema: Type[BaseModel]](AbstractRepository, ABC):
+    model: Type[Model] = None
+    schema: Type[Schema] = None
 
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -39,7 +41,6 @@ class SQLAlchemyRepository(AbstractRepository, ABC):
     async def add_and_return_id(self, data: dict) -> int | bool:
         stmt = insert(self.model).values(**data).returning(self.model.id)
         try:
-            print(data)
             res = await self.session.execute(stmt)
             return res.scalar_one()
         except IntegrityError:
@@ -53,17 +54,23 @@ class SQLAlchemyRepository(AbstractRepository, ABC):
         except IntegrityError:
             return False
 
-    async def get_by_id(self, item_id: int) -> Type[schema]:
-        query = select(self.model).where(item_id == self.model.id)
+    async def get_by_id(self, item_id: int, for_user_id: bool = False) -> Schema | None | bool:
+        if for_user_id:
+            query = select(self.model).where(item_id == self.model.user_id)
+        else:
+            query = select(self.model).where(item_id == self.model.id)
         try:
             query_result = await self.session.execute(query)
         except IntegrityError:
             return False
         result = query_result.scalar_one_or_none()
-        return self.schema.model_validate(result, from_attributes=True)
+        return self.schema.model_validate(result, from_attributes=True) if result else None
 
-    async def update(self, item_id: int, **kwargs) -> bool:
-        stmt = update(self.model).where(item_id == self.model.id).values(**kwargs)
+    async def update(self, item_id: int, for_user_id: bool = False, **kwargs) -> bool:
+        if for_user_id:
+            stmt = update(self.model).where(item_id == self.model.user_id).values(**kwargs)
+        else:
+            stmt = update(self.model).where(item_id == self.model.id).values(**kwargs)
         try:
             await self.session.execute(stmt)
             return True
@@ -77,4 +84,15 @@ class SQLAlchemyRepository(AbstractRepository, ABC):
             return True
         except IntegrityError:
             return False
+
+    async def get_all(self, limit: int | None = None, offset: int = 0, sort: bool = False) -> list[Schema]:
+        if limit:
+            query = select(self.model).offset(offset).limit(limit)
+        else:
+            query = select(self.model)
+        if sort:
+            query = query.order_by(self.model.created_at.asc())
+        query_result = await self.session.execute(query)
+        result = query_result.scalars().all()
+        return [self.schema.model_validate(res, from_attributes=True) for res in result]
 

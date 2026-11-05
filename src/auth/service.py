@@ -26,7 +26,7 @@ from src.auth.config import (
     TOKEN_KEY, PRIVATE_KEY_PATH
 )
 from src.schemas import AdminPayload
-from src.uow import IUnitOfWork
+from src.uow import IUnitOfWork, UnitOfWork
 from src.auth.schemas import Login, LoginAdmin
 from src.user.schemas import UserSchema
 
@@ -49,7 +49,7 @@ def decrypt_user_id(encrypted_user_id, key):
     return Fernet(key).decrypt(encrypted_user_id.encode()).decode()
 
 
-def encode_jwt(payload: dict[str, int],
+def encode_jwt(payload: dict[str, int | float | str],
                refresh_token: bool = False,
                password: str = PRIVATE_KEY_PASSWORD) -> str:
     private_key = load_private_key(password)
@@ -121,20 +121,47 @@ def generate_password():
 class AuthService:
 
     @classmethod
-    async def check_user_banned(cls, uow: IUnitOfWork, user_id: int) -> bool | None:
+    async def check_user_banned(cls, uow: UnitOfWork, user_id: int) -> bool | None:
         async with uow:
             user: UserSchema = await uow.user.get_by_id(user_id)
             return user.banned if user else None
 
     @classmethod
-    async def get_user_info(cls, uow: IUnitOfWork, user: Login) -> dict | bool | None:
+    async def get_user_info(cls, uow: UnitOfWork, user: Login) -> dict | bool | None:
         async with uow:
             current_user: UserSchema = await uow.user.get_by_id(user.user_id)
             if not current_user:
                 return None
             if current_user.banned is True:
                 raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Forbidden")
+            await uow.user.update(item_id=user.user_id, username=user.username, avatar=user.avatar)
             await uow.commit()
             return {'user_id': user.user_id, 'banned': current_user.banned}
 
-# print(encode_jwt({"user_id": 844642570, "banned": False}))
+    @classmethod
+    async def get_admin_info(cls, uow: UnitOfWork, data: Optional[LoginAdmin] = None,
+                             user_id: int = None) -> AdminPayload:
+        if user_id:
+            async with uow:
+                admin = await uow.admin.get_info(user_id=user_id)
+            if admin:
+                return AdminPayload.model_validate({'user_id': admin.id, 'level': admin.level})
+            else:
+                raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Неверный логин или пароль")
+        elif data:
+            try:
+                admin_id = int(data.login)
+            except ValueError:
+                raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Неверный логин или пароль")
+            async with uow:
+                admin = await uow.admin.get_info(user_id=admin_id)
+            if admin:
+                admin_pass = decrypt_pass(encrypted_password=admin.password, salt=admin.salt)
+                if admin_pass == data.password:
+                    return AdminPayload.model_validate({'user_id': admin_id, 'level': admin.level})
+                else:
+                    raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Неверный логин или пароль")
+            else:
+                raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Неверный логин или пароль")
+        else:
+            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Не переданы данные для аутентификации")

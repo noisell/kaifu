@@ -11,6 +11,7 @@ from src.config import DATABASE_URL
 from src.user.models import *  # noqa: F403
 from src.system.models import * # noqa: F403
 from src.lottery.models import * # noqa: F403
+from src.admin.models import * # noqa: F403
 
 from src.database import Base
 

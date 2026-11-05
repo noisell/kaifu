@@ -2,14 +2,14 @@ from datetime import datetime, UTC
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs, AsyncSession
 from sqlalchemy.orm import DeclarativeBase, mapped_column
 from typing import Annotated
-from sqlalchemy import String, text
+from sqlalchemy import String, text, BigInteger
 
 from src.config import DATABASE_URL
 
 engine = create_async_engine(
     url=DATABASE_URL,
-    pool_size=1000,
-    max_overflow=1000,
+    pool_size=2000,
+    max_overflow=2000,
     pool_recycle=3600,
     pool_pre_ping=True,
 )
@@ -24,9 +24,9 @@ class Base(AsyncAttrs, DeclarativeBase):
     }
 
 
-intPK = Annotated[int, mapped_column(primary_key=True, autoincrement=True)]
+intPK = Annotated[int, mapped_column(BigInteger, primary_key=True, autoincrement=True)]
 time = Annotated[datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 updated_at = Annotated[datetime, mapped_column(
     server_default=text("TIMEZONE('utc', now())"),
-    onupdate=datetime.now(UTC).replace(tzinfo=None),
+    onupdate=text("TIMEZONE('utc', now())"),
 )]

@@ -14,6 +14,7 @@ class Login(BaseModel):
     init_data: str = Field(description="Строка с необработанными данными из window.Telegram.WebApp.initData", title="")
     user_id: int = Field(description="ID пользователя в Telegram", examples=["78273823"], title="")
     username: str | None = Field(None, description="Username пользователя в Telegram", examples=["mirry_manager"], title="")
+    avatar: str | None
 
 
 class LoginAdmin(BaseModel):

@@ -14,4 +14,5 @@ ADMIN_PASS = os.getenv('ADMIN_PASS')
 
 DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-SENTRY_DSN = os.getenv('SENTRY_DSN')
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
